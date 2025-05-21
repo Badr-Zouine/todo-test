@@ -1,11 +1,19 @@
-import react,{useState} from "react";
+import react,{useState, useEffect} from "react";
 
 function ToDoList(){
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState(() =>{
+                                                const saved = localStorage.getItem('tasks'); // Get saved todos from localStorage
+                                                return saved ? JSON.parse(saved) : [];       // If there are saved todos, parse them from JSON; otherwise return an empty array
+                                            });
     const [newtask, setNewtask] = useState("");
+
+    useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));}, [tasks]);// Save current todos to localStorage as a JSON string
+
 
     function handleInputChange(event){
         setNewtask(event.target.value);
+    
 
     }
     function addTask(){
@@ -40,7 +48,7 @@ function ToDoList(){
         <div className="to-do-list">
             <h1>To Do List</h1>
             <div>
-                <input type="text" placeholder="Enter a task..." value={newtask} onChange={handleInputChange} />
+                <input type="text" placeholder="Enter a task..." value={newtask} onChange={handleInputChange} onKeyDown={e => {if (e.key === 'Enter'){addTask();}}}/>
                 <button className="add-button" onClick={addTask}>add</button>
 
             </div>
